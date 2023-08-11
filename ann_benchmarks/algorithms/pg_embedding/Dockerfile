@@ -23,3 +23,15 @@ RUN service postgresql start && \
 USER root
 
 RUN pip install psycopg[binary]
+
+# Create a script to modify postgresql.conf during container initialization
+RUN echo '#!/bin/bash' > /docker-entrypoint-initdb.d/modify-config.sh && \
+    echo "sed -i 's/#shared_buffers = 128MB/shared_buffers = 128GB/' \$PGDATA/postgresql.conf" >> /docker-entrypoint-initdb.d/modify-config.sh && \
+    echo "sed -i 's/#effective_cache_size = 4GB/effective_cache_size = 256GB/' \$PGDATA/postgresql.conf" >> /docker-entrypoint-initdb.d/modify-config.sh && \
+    echo "sed -i 's/#work_mem = 4MB/work_mem = 4GB/' \$PGDATA/postgresql.conf" >> /docker-entrypoint-initdb.d/modify-config.sh && \
+    echo "sed -i 's/#maintenance_work_mem = 64MB/maintenance_work_mem = 64GB/' \$PGDATA/postgresql.conf" >> /docker-entrypoint-initdb.d/modify-config.sh && \
+    echo "sed -i 's/#max_wal_size = 1GB/max_wal_size = 20GB/' \$PGDATA/postgresql.conf" >> /docker-entrypoint-initdb.d/modify-config.sh && \
+    echo "sed -i 's/#wal_compression = off/wal_compression = zstd/' \$PGDATA/postgresql.conf" >> /docker-entrypoint-initdb.d/modify-config.sh && \
+    echo "sed -i 's/#checkpoint_timeout = 30min/checkpoint_timeout = 2h/' \$PGDATA/postgresql.conf" >> /docker-entrypoint-initdb.d/modify-config.sh && \
+    echo "sed -i 's/#jit = on/jit = off/' \$PGDATA/postgresql.conf" >> /docker-entrypoint-initdb.d/modify-config.sh && \
+    chmod +x /docker-entrypoint-initdb.d/modify-config.sh
