@@ -24,6 +24,9 @@ USER root
 
 RUN pip install psycopg[binary]
 
+# Create the initialization directory
+RUN mkdir -p /docker-entrypoint-initdb.d/
+
 # Create a script to modify postgresql.conf during container initialization
 RUN echo '#!/bin/bash' > /docker-entrypoint-initdb.d/modify-config.sh && \
     echo "sed -i 's/#shared_buffers = 128MB/shared_buffers = 128GB/' \$PGDATA/postgresql.conf" >> /docker-entrypoint-initdb.d/modify-config.sh && \
